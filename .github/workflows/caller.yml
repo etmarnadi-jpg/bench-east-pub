@@ -1,0 +1,110 @@
+name: caller
+run-name: caller ${{ inputs.rid }}
+# The bench's 4 test callers from Azure East US (see east-bench.sh). Test keys only, never printed.
+on:
+  workflow_dispatch:
+    inputs:
+      code_ref: { required: true, description: "branch with the commit snapshot" }
+      tag: { required: true, description: "run1 or run2" }
+      rid: { required: true, description: "unique id of this run (tag-sha7-random)" }
+      slot: { required: false, default: "", description: "one bench run asked of several runners: only the first in Virginia calls" }
+jobs:
+  callers:
+    runs-on: ubuntu-latest
+    permissions: { contents: write, actions: read }
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with: { ref: "${{ inputs.code_ref }}", path: rl }
+      - uses: actions/setup-node@v4
+        with: { node-version: "22.22.3" }
+      - name: where
+        env:
+          SITE_URL: ${{ secrets.BENCH_SITE_URL }}
+        run: |
+          echo "$SITE_URL" | grep -q -x -E 'https://[a-z0-9-]+\.trycloudflare\.com|https://aivorlabs-tests\.aivorlabs-site\.workers\.dev' || { echo "site_url is not the bench test site: no calls"; exit 1; }
+          echo "region: $(curl -s -H Metadata:true 'http://169.254.169.254/metadata/instance/compute/location?api-version=2021-02-01&format=text' --max-time 3)" | tee where.txt
+          echo "virginia connect: $(curl -s -o /dev/null -w '%{time_connect}' https://ec2.us-east-1.amazonaws.com)" | tee -a where.txt
+          echo "rid: ${{ inputs.rid }}" >> where.txt
+          grep -q -E "^region: eastus2?$" where.txt || { echo "not in Azure East US (Virginia): no calls (Astra: never a result from elsewhere)"; exit 1; }
+      - name: claim
+        if: ${{ inputs.slot != '' }}
+        # 21 Oct 2026 (Ethan: "run the tests NOW"; e63b waited 20 min for a Virginia runner one try at a time): several runners are
+        # asked at once; a tag can be made once, so only the first in Virginia places the calls
+        # 21 Oct 20:20 (test-system builder): a plain tag on the same commit pushed twice is "up to date" (exit 0), so two
+        # Virginia runners both claimed c4fc612 run1 (8 calls on the agent at once). Each runner now pushes its OWN annotated
+        # tag (a unique message): the second push is refused.
+        run: cd rl && git -c user.name=bench -c user.email=bench@localhost tag -a -m "claimed by ${{ inputs.rid }} $(hostname) $(date +%s%N)" claim-${{ inputs.slot }} && git push -q origin refs/tags/claim-${{ inputs.slot }} || { echo "another Virginia runner has this run, no calls"; exit 1; }
+      - name: keys
+        env:
+          LK3_URL: ${{ secrets.LK3_URL }}
+          LK3_API_KEY: ${{ secrets.LK3_API_KEY }}
+          LK3_API_SECRET: ${{ secrets.LK3_API_SECRET }}
+          DEEPGRAM_2: ${{ secrets.DEEPGRAM_2 }}
+          CARTESIA_C: ${{ secrets.CARTESIA_C }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LINE_KEY_HARBOR: ${{ secrets.LINE_KEY_HARBOR }}
+        run: |
+          umask 077; K=$HOME/ethan/secrets; mkdir -p $K/deepgram; chmod 700 $K $K/deepgram
+          printf '%s\n' "$LK3_URL" > $K/livekit3-url; printf '%s\n' "$LK3_API_KEY" > $K/livekit3-api-key
+          printf '%s\n' "$LK3_API_SECRET" > $K/livekit3-api-secret; printf '%s\n' "$DEEPGRAM_2" > $K/deepgram/2
+          printf '%s\n' "$CARTESIA_C" > $K/cartesia-api-key-c; printf '%s\n' "$LLM_API_KEY" > $K/llm-api-key
+          printf '%s\n' "$LINE_KEY_HARBOR" > $K/line-key-harbor   # umask 077: every file 600
+      - name: install
+        run: |
+          cd rl && npm ci --no-audit --no-fund > /dev/null
+          curl -sSL https://get.livekit.io/cli | bash > /dev/null 2>&1; lk --version
+      - name: callers
+        env:
+          BENCH_MODEL_URL: ${{ secrets.BENCH_MODEL_URL }}
+          TAG: ${{ inputs.tag }}
+          SITE_URL: ${{ secrets.BENCH_SITE_URL }}
+        run: |
+          K=$HOME/ethan/secrets; out=$GITHUB_WORKSPACE/out; mkdir -p $out
+          lk3() { LIVEKIT_URL=$(cat $K/livekit3-url) LIVEKIT_API_KEY=$(cat $K/livekit3-api-key) LIVEKIT_API_SECRET=$(cat $K/livekit3-api-secret) lk "$@"; }
+          wake() { local r=wake-$1-$RANDOM; lk3 dispatch create --agent-name cloud-test --room $r >/dev/null 2>&1; sleep 25; lk3 room delete $r >/dev/null 2>&1; sleep 3; }
+          wake $TAG
+          # 23 Oct (benchmark v2): every call recorded as the caller hears it; JSON + WAVs in out/bench/, uploaded with out/
+          cd rl; export BENCH_SITE=$SITE_URL BENCH_CALLER_TTS=deepgram HW_LK_KEYS=livekit3 BENCH_PHONE=1 BENCH_AGENT_NAME=cloud-test BENCH_RECORD=1 BENCH_OUT_DIR=$out/bench
+          for p in "krzysztof british fast" "xiomara indian pause" "diwakar indian normal" "siobhan-move southern slow"; do
+            set -- $p
+            for try in 1 2; do
+              timeout 300 node bench/run.mjs --livekit --live --account c --persona $1 --accent $2 --pace $3 --max-minutes 3 > $out/bench-$TAG-$1.log 2>&1 < /dev/null || true
+              f=$(grep -o "saved .*\.json" $out/bench-$TAG-$1.log | tail -1 | cut -c7-)
+              [ -n "$f" ] && python3 -c "import json,sys; sys.exit(0 if json.load(open('$f'))['gaps'] else 1)" && break
+              wake $TAG-$try
+            done
+            [ -n "$f" ] && cp "$f" $out/$TAG-$1.json
+            if [ -n "$f" ] && python3 -c "import json,sys; sys.exit(0 if any(x.get('released') for x in json.load(open('$f')).get('released') or []) else 1)"; then
+              sleep 50; wake $TAG-gap
+            fi
+          done
+          cp $GITHUB_WORKSPACE/where.txt $out/
+      - name: scrub
+        if: always()
+        # 24 Oct (public repo): the artifact is public, so every private address in out/ is replaced before upload
+        env:
+          V1: ${{ secrets.BENCH_MODEL_URL }}
+          V2: ${{ secrets.BENCH_SITE_URL }}
+          V3: ${{ secrets.LK3_URL }}
+        run: |
+          mkdir -p out; python3 - <<'PY'
+          import os, pathlib, re
+          vals = set()
+          for k in ("V1", "V2", "V3"):
+              v = os.environ.get(k, "").strip()
+              if v:
+                  vals |= {v, v.rstrip("/").removesuffix("/v1")}
+                  h = re.sub(r"^[a-z]+://", "", v).split("/")[0]
+                  if h: vals.add(h)
+          vals = sorted((v for v in vals if len(v) >= 8), key=len, reverse=True)
+          for f in pathlib.Path("out").rglob("*"):
+              if f.is_file() and f.suffix.lower() not in (".wav", ".mp3", ".ogg", ".pcm"):
+                  b = f.read_bytes(); n = b
+                  for v in vals: n = n.replace(v.encode(), b"[hidden]")
+                  if n != b: f.write_bytes(n)
+          print("scrubbed", len(vals), "values")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: "callers-${{ inputs.rid }}", path: out/, retention-days: 7 }
