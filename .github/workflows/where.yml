@@ -1,0 +1,10 @@
+name: where
+on: workflow_dispatch
+jobs:
+  where:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          for i in 1 2 3; do for h in ec2.us-east-1.amazonaws.com ec2.us-west-2.amazonaws.com ec2.us-east-2.amazonaws.com; do echo "$h $(curl -s -o /dev/null -w '%{time_connect}' https://$h)"; done; done
+          curl -s -H Metadata:true "http://169.254.169.254/metadata/instance/compute/location?api-version=2021-02-01&format=text" --max-time 3 || true; echo
+          nproc; free -g | head -2

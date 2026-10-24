@@ -1,0 +1,1 @@
+Public: the test callers of a receptionist bench, run from GitHub Actions in Azure East US (Ethan, 24 Oct 2026). Made-up callers and test accounts only; the receptionist code, keys and private addresses are not in this repo (keys are repo secrets).
