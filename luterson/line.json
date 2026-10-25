@@ -1,0 +1,15 @@
+{
+ "business": "Luterson Moving",
+ "check": "stub",
+ "hold": "stub",
+ "number": "stub",
+ "card": "stub",
+ "webhook": "stub",
+ "keyFile": "stub",
+ "prompt": "stub",
+ "id": "luterson",
+ "agent": "Luterson Moving line",
+ "timezone": "America/Los_Angeles",
+ "greeting": "Thanks for calling Luterson Moving. How can I help you?",
+ "_": "stub for the public bench: only the agent name is used (never called)"
+}

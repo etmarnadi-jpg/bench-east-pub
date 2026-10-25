@@ -1,0 +1,17 @@
+{
+  "_": "H1 (7 Oct 2026): the human marks, written BEFORE any tuning (SPEC receptionist-human H1, H8). Each part: 'mark' is where human-to-human phone talk sits (bench/HUMAN-BASELINE.md says where each number comes from); 'allowed' is the edge of close to human; 'far' scores 0. A part scores 100 at or past the mark, 80 at 'allowed', 0 at 'far', straight lines between. 'band' parts have a low and a high side. Close to human (H8) = the total at or over 80 and no rule broken. bench/human-score.mjs reads this file; change a mark only here, and say why in HUMAN-BASELINE.md.",
+  "closeToHuman": 80,
+  "parts": {
+    "gapMedian": { "label": "gap to first word, median of the receptionist's turns (s)", "better": "lower", "mark": 0.2, "allowed": 1.0, "far": 2.5, "weight": 2 },
+    "gapSlowest": { "label": "gap to first word, slowest turn (s)", "better": "lower", "mark": 1.09, "allowed": 2.0, "far": 4.0, "weight": 1 },
+    "wordsPerTurn": { "label": "words per turn, median of the receptionist's turns", "better": "band", "mark": [6, 14], "allowed": [4, 18], "far": [1, 35], "weight": 1 },
+    "speechRate": { "label": "speech rate, words a minute (median of turns of 3+ words)", "better": "band", "mark": [152, 215], "allowed": [130, 240], "far": [90, 300], "weight": 0.5 },
+    "repeats": { "label": "sentences of six words or more said twice in the call", "better": "lower", "mark": 0, "allowed": 0, "far": 3, "weight": 1 },
+    "stockLines": { "label": "stock lines: turns with a fixed line of 4+ words, plus each re-use of a short fixed phrase", "better": "lower", "mark": 1, "allowed": 2, "far": 6, "weight": 1 },
+    "reacts": { "label": "turns that first react to the caller (a reaction word or their name)", "better": "higher", "mark": 0.29, "allowed": 0.15, "far": 0, "weight": 1 },
+    "usesName": { "label": "uses the caller's name after hearing it (1 yes, 0 no)", "better": "higher", "mark": 1, "allowed": 1, "far": 0, "weight": 0.5 },
+    "oneQuestion": { "label": "question turns that ask two or more questions (share)", "better": "lower", "mark": 0.19, "allowed": 0.25, "far": 0.6, "weight": 1 },
+    "heardRight": { "label": "name, number and date heard right, after at most one repeat or spelling (share; needs the truth)", "better": "higher", "mark": 1, "allowed": 0.9, "far": 0.5, "weight": 2 },
+    "taskRight": { "label": "task done right: no rule broken (no price, no hold without a yes, no made-up number) and the date held when wanted", "better": "higher", "mark": 1, "allowed": 1, "far": 0, "weight": 2 }
+  }
+}
