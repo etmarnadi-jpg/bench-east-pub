@@ -1,0 +1,20 @@
+{
+  "_": "H1 (7 Oct 2026): the bench caller's accents. Every voice was picked from GET /voices?language=en (450 voices) and ?language=zh on Cartesia account C on 7 Oct 2026, by its 'accents' field (accent, locale, is_native) and its description. 'native' = the accent the voice is listed as native in. Voices whose native language is not English speak English through sonic-3.6 with language 'en'; whether their accent carries into English is NOT proven (bench/hear.mjs and a listen will say). bench/run.mjs --accent <key> and bench/hear.mjs read this file.",
+  "accents": {
+    "us": { "voice": "d46abd1d-2d02-43e8-819f-51fb652c1c61", "name": "Grant", "native": "general-american en-US", "why": "the control: a clear, neutral American voice ('customer support')" },
+    "southern": { "voice": "3d83e30f-c31b-4f26-b442-7075feafa53a", "name": "Wade", "native": "southern-us en-US", "why": "a strong US regional accent ('a warm drawl')" },
+    "newyork": { "voice": "8e14933d-ecd7-402b-9505-795130d69b35", "name": "Luke", "native": "new-york en-US", "why": "a fast US city accent" },
+    "african-american": { "voice": "607167f6-9bf2-473c-accc-ac7b3b66b30b", "name": "Brenda", "native": "african-american en-US", "why": "a common US accent the speech-to-text must hear as well as any other" },
+    "indian": { "voice": "1259b7e3-cb8a-43df-9446-30971a46b8b0", "name": "Devansh", "native": "indian-english en-IN", "why": "Indian English, the accent of Elijah's call (6 Oct), where the name was heard wrong twice" },
+    "british": { "voice": "ef191366-f52f-447a-a398-ed8c0f2943a1", "name": "Archie", "native": "british en-GB", "why": "British English ('warm, conversational')" },
+    "irish": { "voice": "d79d2b77-9192-4e10-9407-5d43ca034803", "name": "Siobhan", "native": "irish en-IE", "why": "Irish English, the accent the name Siobhan comes with" },
+    "australian": { "voice": "2a12b36c-7f9b-4c3a-9f7a-72731b15323a", "name": "Ella", "native": "australian en-AU", "why": "Australian English" },
+    "south-african": { "voice": "692846ad-1a6b-49b8-bfc5-86421fd41a19", "name": "Thandi", "native": "south-african en-ZA", "why": "an African English accent (no Nigerian or West African English voice is on the account)" },
+    "singaporean": { "voice": "df38a4f6-5d10-4fe7-b268-952aef25d76a", "name": "Justin", "native": "singaporean en-SG", "why": "South-East Asian English ('a calm and methodical Singaporean accent')" },
+    "arabic": { "voice": "daf747c6-6bc2-4083-bd59-aa94dce23f5d", "name": "Yasmin", "native": "arabic-english en-US", "why": "Arabic-accented English, the only voice listed with that accent" },
+    "spanish": { "voice": "727f663b-0e90-4031-90f2-558b7334425b", "name": "Carmen", "native": "camba es-BO (Spanish)", "why": "a native Spanish speaker's voice speaking English (no Spanish-accented English voice is listed in English)" },
+    "italian": { "voice": "1fc31370-81b1-4588-9c1a-f93793c6e01d", "name": "Carlo", "native": "standard-italian it-IT, listed under English", "why": "an English voice described as 'accented', native Italian" },
+    "vietnamese": { "voice": "b8cd71e3-bc14-4538-a530-d6314731c036", "name": "Xia", "native": "southern-vietnamese vi-VN", "why": "a native Vietnamese speaker's voice speaking English, for the name Nguyen" },
+    "chinese": { "voice": "16212f18-4955-4be9-a6cd-2196ce2c11d1", "name": "Hao", "native": "mandarin zh-CN", "why": "a native Mandarin speaker's voice speaking English" }
+  }
+}
