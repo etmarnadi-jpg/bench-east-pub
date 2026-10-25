@@ -1,0 +1,115 @@
+{
+ "callhome": {
+  "dataset": "quangln/callhome_transcribed_cleaned (CallHome English, phone)",
+  "conversations": 140,
+  "gap_s": {
+   "n": 22906,
+   "median": 0.0,
+   "p10": -0.82,
+   "p90": 0.74,
+   "mean": 0.007
+  },
+  "gap0_s": {
+   "n": 22906,
+   "median": 0.0,
+   "p10": 0.0,
+   "p90": 0.74,
+   "mean": 0.252
+  },
+  "gap_silent_only_s": {
+   "n": 11400,
+   "median": 0.34,
+   "p10": 0.07,
+   "p90": 1.09,
+   "mean": 0.506
+  },
+  "overlap_share": 0.492,
+  "words_per_turn_per_call": {
+   "n": 140,
+   "median": 8.839,
+   "p10": 6.163,
+   "p90": 14.008,
+   "mean": 9.582
+  },
+  "speech_rate_wpm_per_call": {
+   "n": 140,
+   "median": 186.858,
+   "p10": 152.291,
+   "p90": 214.974,
+   "mean": 185.095
+  },
+  "calls_with_a_repeated_6word_sentence": 21,
+  "question_marks_per_turn": 0.095,
+  "note": "one transcript per call: words per turn and rate are per call (words / turns, words / speaking minutes); speakers of a sentence unknown"
+ },
+ "candor": {
+  "dataset": "hirotakahiraki/candor-turntaking-annotations (CANDOR, video chat between strangers)",
+  "conversations": 1656,
+  "segments_used": 154495,
+  "segments_dropped_no_words_or_window": 18096,
+  "gap_s": {
+   "n": 30449,
+   "median": 0.58,
+   "p10": 0.1,
+   "p90": 3.41,
+   "mean": 1.15
+  },
+  "gap0_s": {
+   "n": 30449,
+   "median": 0.58,
+   "p10": 0.1,
+   "p90": 3.41,
+   "mean": 1.15
+  },
+  "gap_s_no_backchannel": {
+   "n": 23465,
+   "median": 0.65,
+   "p10": 0.17,
+   "p90": 3.566,
+   "mean": 1.221
+  },
+  "gap0_s_no_backchannel": {
+   "n": 23465,
+   "median": 0.65,
+   "p10": 0.17,
+   "p90": 3.566,
+   "mean": 1.221
+  },
+  "gap_silent_only_s": {
+   "n": 30243,
+   "median": 0.58,
+   "p10": 0.17,
+   "p90": 3.42,
+   "mean": 1.158
+  },
+  "overlap_share": 0.001,
+  "turns": 65267,
+  "backchannel_share": 0.099,
+  "words_per_turn_all": {
+   "n": 65267,
+   "median": 19,
+   "p10": 2.0,
+   "p90": 94.0,
+   "mean": 38.22
+  },
+  "words_per_turn_no_backchannel": {
+   "n": 58787,
+   "median": 24,
+   "p10": 4.0,
+   "p90": 100.0,
+   "mean": 42.288
+  },
+  "speech_rate_wpm_per_segment": {
+   "n": 80627,
+   "median": 170.667,
+   "p10": 90.452,
+   "p90": 247.934,
+   "mean": 171.138
+  },
+  "reacts_first_share": 0.294,
+  "question_turn_share": 0.134,
+  "two_plus_questions_share_of_question_turns": 0.192,
+  "repeated_6word_sentences_per_100_turns": 0.014,
+  "conversations_with_a_repeat": 7
+ }
+}
